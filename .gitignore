@@ -1,0 +1,31 @@
+# Python
+
+venv/
+__pycache__/
+*.pyc
+
+# Generated backend files
+
+backend/input/
+backend/output/
+backend/temp/
+backend/separated/
+backend/layers/
+
+# Flutter
+
+mobile/build/
+mobile/.dart_tool/
+
+# VS Code
+
+.vscode/
+
+# Android Studio
+
+.idea/
+
+# Media files
+
+*.mp4
+*.wav

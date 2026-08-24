@@ -1,0 +1,10 @@
+[
+    {
+        "label": "Music",
+        "confidence": 0.799
+    },
+    {
+        "label": "Silence",
+        "confidence": 0.087
+    }
+]

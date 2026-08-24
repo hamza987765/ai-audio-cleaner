@@ -1,0 +1,10 @@
+{
+    "Speech": {
+        "enabled": true,
+        "file": "layers/Speech.wav"
+    },
+    "Music": {
+        "enabled": true,
+        "file": "layers/Music.wav"
+    }
+}
