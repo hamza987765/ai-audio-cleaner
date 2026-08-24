@@ -1,5 +1,5 @@
- import pkg_resources
 try:
+    import pkg_resources
     print("pkg_resources OK")
 except Exception as e:
     print("pkg_resources ERROR:", e)
