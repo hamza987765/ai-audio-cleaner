@@ -2,8 +2,8 @@ try:
     import pkg_resources
     print("pkg_resources OK")
 except Exception as e:
-    print("pkg_resources ERROR:", e)
-    
+    print(f"pkg_resources ERROR: {e}")
+
 import os
 import json
 import csv
