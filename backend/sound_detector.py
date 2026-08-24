@@ -1,3 +1,32 @@
+print("IMPORT 1")
+
+try:
+    import tensorflow_hub as hub
+    print("IMPORT HUB OK")
+except Exception as e:
+    print("IMPORT HUB FAILED:", e)
+    raise
+
+print("IMPORT 2")
+
+try:
+    import tensorflow as tf
+    print("IMPORT TF OK")
+except Exception as e:
+    print("IMPORT TF FAILED:", e)
+    raise
+
+print("IMPORT 3")
+
+try:
+    import librosa
+    print("IMPORT LIBROSA OK")
+except Exception as e:
+    print("IMPORT LIBROSA FAILED:", e)
+    raise
+
+print("IMPORTS COMPLETE")
+
 try:
     import pkg_resources
     print("pkg_resources OK")
