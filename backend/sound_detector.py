@@ -1,7 +1,13 @@
+try:
+    import pkg_resources
+    print("pkg_resources FOUND")
+except Exception as e:
+    print("pkg_resources FAILED:", e)
+    raise
+
 print("IMPORT 1")
 
 try:
-    import tensorflow_hub as hub
     print("IMPORT HUB OK")
 except Exception as e:
     print("IMPORT HUB FAILED:", e)
