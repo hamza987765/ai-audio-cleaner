@@ -2,12 +2,7 @@ from pydub import AudioSegment
 import json
 import os
 
-FFMPEG_DIR = r"C:\ffmpeg-9.0.1-essentials_build\bin"
-
-AudioSegment.converter = os.path.join(
-    FFMPEG_DIR,
-    "ffmpeg.exe"
-)
+from pydub import AudioSegment
 # ============================================================
 # PATHS
 # ============================================================
