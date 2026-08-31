@@ -1,13 +1,15 @@
-try:
-    import pkg_resources
-    print("pkg_resources FOUND")
-except Exception as e:
-    print("pkg_resources FAILED:", e)
-    raise
+import os
+import json
+import csv
+
+# ============================================================
+# IMPORT TESTS
+# ============================================================
 
 print("IMPORT 1")
 
 try:
+    import tensorflow_hub as hub
     print("IMPORT HUB OK")
 except Exception as e:
     print("IMPORT HUB FAILED:", e)
@@ -33,21 +35,6 @@ except Exception as e:
 
 print("IMPORTS COMPLETE")
 
-try:
-    import pkg_resources
-    print("pkg_resources OK")
-except Exception as e:
-    print(f"pkg_resources ERROR: {e}")
-
-import os
-import json
-import csv
-
-import tensorflow_hub as hub
-import tensorflow as tf
-import librosa
-
-
 # ============================================================
 # PATH CONFIGURATION
 # ============================================================
@@ -65,9 +52,8 @@ DETECTED_SOUNDS_FILE = os.path.join(
     "detected_sounds.json"
 )
 
-
 # ============================================================
-# DEBUG / PATH CHECK
+# DEBUG
 # ============================================================
 
 print("========================================")
@@ -78,23 +64,20 @@ print(f"Backend directory : {BASE_DIR}")
 print(f"Audio file        : {AUDIO_FILE}")
 print(f"Audio exists      : {os.path.exists(AUDIO_FILE)}")
 
-
 if not os.path.exists(AUDIO_FILE):
     raise FileNotFoundError(
         f"Audio file not found: {AUDIO_FILE}"
     )
 
-
 # ============================================================
-# LOAD YAMNET MODEL
+# LOAD YAMNET
 # ============================================================
 
-print("\nLoading model...")
+print("\nLoading YAMNET model...")
 
 model = hub.load(
     "https://tfhub.dev/google/yamnet/1"
 )
-
 
 # ============================================================
 # LOAD AUDIO
@@ -107,24 +90,22 @@ waveform, sr = librosa.load(
     sr=16000
 )
 
-print(f"Sample rate       : {sr}")
-print(f"Audio samples     : {len(waveform)}")
-print(f"Duration          : {len(waveform) / sr:.2f} seconds")
-
+print(f"Sample rate   : {sr}")
+print(f"Samples       : {len(waveform)}")
+print(f"Duration      : {len(waveform) / sr:.2f} sec")
 
 # ============================================================
-# RUN YAMNET
+# RUN MODEL
 # ============================================================
 
-print("\nRunning sound detection...")
+print("\nRunning detection...")
 
 scores, embeddings, spectrogram = model(waveform)
 
 scores_np = scores.numpy()
 
-
 # ============================================================
-# LOAD CLASS NAMES
+# CLASS LABELS
 # ============================================================
 
 class_map_path = model.class_map_path().numpy().decode("utf-8")
@@ -143,41 +124,27 @@ with open(
             row["display_name"]
         )
 
-
 # ============================================================
-# CALCULATE MEAN SCORES
+# TOP DETECTIONS
 # ============================================================
 
 mean_scores = scores_np.mean(axis=0)
 
 detected = []
 
-
-# ============================================================
-# SELECT TOP DETECTIONS
-# ============================================================
-
 for i in mean_scores.argsort()[-20:][::-1]:
 
-    label = class_names[i]
-
-    confidence = float(
-        mean_scores[i]
-    )
+    confidence = float(mean_scores[i])
 
     if confidence > 0.03:
 
         detected.append({
-            "label": label,
-            "confidence": round(
-                confidence,
-                3
-            )
+            "label": class_names[i],
+            "confidence": round(confidence, 3)
         })
 
-
 # ============================================================
-# DISPLAY RESULTS
+# PRINT RESULTS
 # ============================================================
 
 print("\nDetected Sounds:\n")
@@ -189,14 +156,8 @@ for item in detected:
         f"{item['confidence']}"
     )
 
-
-print("\nRaw Detection List:\n")
-
-print(detected)
-
-
 # ============================================================
-# SAVE RESULTS
+# SAVE JSON
 # ============================================================
 
 with open(
@@ -210,7 +171,6 @@ with open(
         f,
         indent=4
     )
-
 
 print(
     f"\nDetected sounds saved to:\n"
