@@ -3,15 +3,6 @@ import os
 
 
 # ============================================================
-# FFMPEG PATH
-# ============================================================
-
-FFMPEG_DIR = r"C:\ffmpeg-9.0.1-essentials_build\bin"
-
-os.environ["PATH"] += os.pathsep + FFMPEG_DIR
-
-
-# ============================================================
 # PATHS
 # ============================================================
 
@@ -46,21 +37,11 @@ print("========================================")
 print("Final Video Renderer")
 print("========================================")
 
-print(f"FFmpeg directory: {FFMPEG_DIR}")
+
 print(f"Video           : {VIDEO}")
 print(f"Audio           : {AUDIO}")
 print(f"Output          : {OUTPUT}")
 
-
-FFMPEG_EXE = os.path.join(
-    FFMPEG_DIR,
-    "ffmpeg.exe"
-)
-
-if not os.path.exists(FFMPEG_EXE):
-    raise FileNotFoundError(
-        f"FFmpeg not found: {FFMPEG_EXE}"
-    )
 
 if not os.path.exists(VIDEO):
     raise FileNotFoundError(
@@ -73,7 +54,7 @@ if not os.path.exists(AUDIO):
     )
 
 
-print(f"FFmpeg executable: {FFMPEG_EXE}")
+
 
 
 # ============================================================
@@ -97,10 +78,7 @@ audio = ffmpeg.input(AUDIO).audio
         vcodec="copy",
         acodec="aac"
     )
-    .run(
-        cmd=FFMPEG_EXE,
-        overwrite_output=True
-    )
+    .run(overwrite_output=True)
 )
 
 
