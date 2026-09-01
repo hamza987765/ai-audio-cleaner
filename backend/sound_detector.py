@@ -1,4 +1,13 @@
+import pkg_resources
+print("pkg_resources imported successfully")
+import tensorflow_hub as hub
+print("tensorflow_hub imported successfully")
 print("SOUND DETECTOR VERSION 999")
+import setuptools
+print("SETUPTOOLS VERSION:", setuptools.__version__)
+
+import pkg_resources
+print("PKG_RESOURCES OK")
 import os
 import json
 import csv
