@@ -4,26 +4,41 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = "http://10.0.2.2:8000";
+  static const String baseUrl = "https://ai-audio-cleaner.onrender.com";
 
   static Future<Map<String, dynamic>> uploadVideo(File file) async {
-    var request = http.MultipartRequest(
-      "POST",
-      Uri.parse("$baseUrl/upload"),
-    );
+    try {
+      print("Uploading file: ${file.path}");
 
-    request.files.add(
-      await http.MultipartFile.fromPath(
-        "file",
-        file.path,
-      ),
-    );
+      var request = http.MultipartRequest(
+        "POST",
+        Uri.parse("$baseUrl/upload"),
+      );
 
-    var response = await request.send();
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          "file",
+          file.path,
+        ),
+      );
 
-    var body = await response.stream.bytesToString();
+      print("Sending request...");
 
-    return jsonDecode(body);
+      var response = await request.send();
+
+      print("Status Code: ${response.statusCode}");
+
+      var body = await response.stream.bytesToString();
+
+      print("Response Body:");
+      print(body);
+
+      return jsonDecode(body);
+    } catch (e) {
+      print("UPLOAD ERROR:");
+      print(e);
+      rethrow;
+    }
   }
 
   static Future<void> renderVideo(
