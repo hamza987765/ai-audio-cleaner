@@ -83,12 +83,20 @@ if not os.path.exists(AUDIO_FILE):
 # LOAD YAMNET
 # ============================================================
 
-print("\nLoading YAMNET model...")
+print("\nLoading YAMNET model...", flush=True)
 
-model = hub.load(
-    "https://tfhub.dev/google/yamnet/1"
-)
+try:
+    model = hub.load(
+        "https://tfhub.dev/google/yamnet/1"
+    )
+    print("YAMNET model loaded successfully.", flush=True)
 
+except Exception as exc:
+    print(
+        f"YAMNET model loading failed: {exc!r}",
+        flush=True
+    )
+    raise
 # ============================================================
 # LOAD AUDIO
 # ============================================================

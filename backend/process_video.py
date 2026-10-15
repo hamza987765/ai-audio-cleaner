@@ -18,12 +18,9 @@ def run_script(script_name):
     print(f"\nRunning: {script_name}")
 
     subprocess.run(
-        [
-            sys.executable,
-            script_path
-        ],
-        check=True
-    )
+    [sys.executable, "-u", script_path],
+    check=True
+)
 
 
 def process_video():
