@@ -1,4 +1,6 @@
 import pkg_resources
+
+from backend import audio_mixer
 print("pkg_resources imported successfully")
 import tensorflow_hub as hub
 print("tensorflow_hub imported successfully")
@@ -11,6 +13,9 @@ print("PKG_RESOURCES OK")
 import os
 import json
 import csv
+import time
+import soundfile as sf
+import librosa
 
 # ============================================================
 # IMPORT TESTS
@@ -103,10 +108,24 @@ except Exception as exc:
 
 print("Loading audio...")
 
-waveform, sr = librosa.load(
-    AUDIO_FILE,
-    sr=16000
+print("Checking audio file metadata...", flush=True)
+
+print(f"Audio file size: {os.path.getsize(audio_mixer)} bytes", flush=True)
+
+info = sf.info(audio_mixer)
+print(f"Audio metadata: {info}", flush=True)
+
+print("Starting librosa.load()...", flush=True)
+load_start = time.time()
+
+waveform, sr = librosa.load(audio_mixer, sr=16000)
+
+print(
+    f"Audio loaded successfully in {time.time() - load_start:.2f} seconds",
+    flush=True
 )
+print(f"Sample rate: {sr}", flush=True)
+print(f"Waveform shape: {waveform.shape}", flush=True)
 
 print(f"Sample rate   : {sr}")
 print(f"Samples       : {len(waveform)}")
