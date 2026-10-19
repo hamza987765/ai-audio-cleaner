@@ -1,7 +1,9 @@
 import pkg_resources
 import os
 import sys
-
+from scipy.signal import resample_poly
+from fractions import Fraction
+import numpy as np
 PROJECT_ROOT = os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))
 )
@@ -124,7 +126,49 @@ print(f"Audio metadata: {info}", flush=True)
 print("Starting librosa.load()...", flush=True)
 load_start = time.time()
 
-waveform, sr = librosa.load(AUDIO_FILE, sr=16000)
+print("Reading WAV file with soundfile...", flush=True)
+load_start = time.time()
+
+audio_data, original_sr = sf.read(
+    AUDIO_FILE,
+    dtype="float32",
+    always_2d=True
+)
+
+print(
+    f"WAV decoded in {time.time() - load_start:.2f} seconds",
+    flush=True
+)
+print(f"Original sample rate: {original_sr}", flush=True)
+print(f"Original audio shape: {audio_data.shape}", flush=True)
+
+# Convert stereo audio to mono, as librosa.load() did by default.
+waveform = np.mean(audio_data, axis=1, dtype=np.float32)
+sr = int(original_sr)
+
+# Resample to 16 kHz for YAMNet.
+if sr != 16000:
+    print(f"Resampling {sr} Hz to 16000 Hz...", flush=True)
+
+    resample_start = time.time()
+    ratio = Fraction(16000, sr)
+
+    waveform = resample_poly(
+        waveform,
+        up=ratio.numerator,
+        down=ratio.denominator
+    ).astype(np.float32)
+
+    sr = 16000
+
+    print(
+        f"Resampling completed in "
+        f"{time.time() - resample_start:.2f} seconds",
+        flush=True
+    )
+
+print(f"Final sample rate: {sr}", flush=True)
+print(f"Final waveform shape: {waveform.shape}", flush=True)
 
 print(
     f"Audio loaded successfully in {time.time() - load_start:.2f} seconds",
