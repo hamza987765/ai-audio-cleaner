@@ -8,7 +8,6 @@ PROJECT_ROOT = os.path.dirname(
 
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
-from backend import audio_mixer
 print("pkg_resources imported successfully")
 import tensorflow_hub as hub
 print("tensorflow_hub imported successfully")
