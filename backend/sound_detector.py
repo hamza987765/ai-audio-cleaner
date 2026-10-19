@@ -116,16 +116,15 @@ except Exception as exc:
 print("Loading audio...")
 
 print("Checking audio file metadata...", flush=True)
+print(f"Audio file size: {os.path.getsize(AUDIO_FILE)} bytes", flush=True)
 
-print(f"Audio file size: {os.path.getsize(audio_mixer)} bytes", flush=True)
-
-info = sf.info(audio_mixer)
+info = sf.info(AUDIO_FILE)
 print(f"Audio metadata: {info}", flush=True)
 
 print("Starting librosa.load()...", flush=True)
 load_start = time.time()
 
-waveform, sr = librosa.load(audio_mixer, sr=16000)
+waveform, sr = librosa.load(AUDIO_FILE, sr=16000)
 
 print(
     f"Audio loaded successfully in {time.time() - load_start:.2f} seconds",
