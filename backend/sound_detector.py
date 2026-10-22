@@ -185,11 +185,28 @@ print(f"Duration      : {len(waveform) / sr:.2f} sec")
 # RUN MODEL
 # ============================================================
 
-print("\nRunning detection...")
+print("\nRunning detection...", flush=True)
+print("Starting YAMNet inference now...", flush=True)
 
-scores, embeddings, spectrogram = model(waveform)
+inference_start = time.time()
 
-scores_np = scores.numpy()
+try:
+    scores, embeddings, spectrogram = model(waveform)
+
+    print(
+        f"YAMNet inference completed in "
+        f"{time.time() - inference_start:.2f} seconds",
+        flush=True
+    )
+
+    print("Converting scores to NumPy...", flush=True)
+    scores_np = scores.numpy()
+
+    print(f"Scores shape: {scores_np.shape}", flush=True)
+
+except Exception as exc:
+    print(f"YAMNet inference failed: {exc!r}", flush=True)
+    raise
 
 # ============================================================
 # CLASS LABELS
