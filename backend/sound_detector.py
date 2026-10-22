@@ -182,32 +182,68 @@ print(f"Samples       : {len(waveform)}")
 print(f"Duration      : {len(waveform) / sr:.2f} sec")
 
 # ============================================================
-# RUN MODEL
+# RUN MODEL - CHUNKED INFERENCE
 # ============================================================
 
 print("\nRunning detection...", flush=True)
-print("Starting YAMNet inference now...", flush=True)
+print("Starting chunked YAMNet inference...", flush=True)
 
 inference_start = time.time()
 
-try:
-    scores, embeddings, spectrogram = model(waveform)
+chunk_samples = 8 * 16000  # 8 seconds at 16 kHz
+minimum_chunk_samples = 16000  # 1 second
+
+score_parts = []
+start = 0
+chunk_number = 1
+
+while start < len(waveform):
+    end = min(start + chunk_samples, len(waveform))
+
+    # Avoid creating a tiny final chunk.
+    remaining = len(waveform) - end
+    if 0 < remaining < minimum_chunk_samples:
+        end = len(waveform)
+
+    audio_chunk = waveform[start:end]
 
     print(
-        f"YAMNet inference completed in "
-        f"{time.time() - inference_start:.2f} seconds",
+        f"YAMNet chunk {chunk_number}: "
+        f"{start / 16000:.2f}s to {end / 16000:.2f}s",
         flush=True
     )
 
-    print("Converting scores to NumPy...", flush=True)
-    scores_np = scores.numpy()
+    scores, embeddings, spectrogram = model(audio_chunk)
 
-    print(f"Scores shape: {scores_np.shape}", flush=True)
+    chunk_scores = scores.numpy()
 
-except Exception as exc:
-    print(f"YAMNet inference failed: {exc!r}", flush=True)
-    raise
+    if chunk_scores.size > 0:
+        score_parts.append(chunk_scores)
 
+    print(
+        f"Chunk {chunk_number} completed. "
+        f"Scores shape: {chunk_scores.shape}",
+        flush=True
+    )
+
+    del scores, embeddings, spectrogram, chunk_scores, audio_chunk
+
+    start = end
+    chunk_number += 1
+
+if not score_parts:
+    raise RuntimeError(
+        "YAMNet returned no scores. Check the audio duration and model input."
+    )
+
+scores_np = np.concatenate(score_parts, axis=0)
+
+print(
+    f"All YAMNet chunks completed in "
+    f"{time.time() - inference_start:.2f} seconds",
+    flush=True
+)
+print(f"Combined scores shape: {scores_np.shape}", flush=True)
 # ============================================================
 # CLASS LABELS
 # ============================================================
